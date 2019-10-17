@@ -114,14 +114,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
           console.log(new Boolean(item.querySelector('.card-sale')));
 
-          if (item.querySelector('.card-sale')) {
-
+          if (!item.querySelector('.card-sale')) {
+            //item.parentNode.remove();
+            // обращаемся к родителя parentNode
+            item.parentNode.style.display = 'none';
           }
         } else {
-
+          //document.querySelector('.goods').appendChild(item.parentNode);
+          item.parentNode.style.display = '';
         }
       })
     });
+
+    // filter price
+    const min = document.getElementById('min');
+    const max = document.getElementById('max');
+1
+    const filterPrice = () => {
+      cards.forEach((elem) => {
+        const elemPrice = elem.querySelector('.card-price');
+        const price = parseFloat(elemPrice.textContent);
+        console.log(price);
+
+        if ((min.value && price < min.value) || (max.value && price > max.value)) {
+          elem.parentNode.remove();
+        } else {
+
+        }
+
+      });
+    };
+
+    min.addEventListener('change', filterPrice);
+    max.addEventListener('change', filterPrice);
+    // end filter price
+
+
+    // search
+    const search = document.querySelector('.search-wrapper_input'),
+          searchBtn = document.querySelector('.search-btn');
+
+    searchBtn.addEventListener('click', () => {
+      // flag i игнор регистр
+      const searchText = new RegExp(search.value.trim(), 'i');
+
+      cards.forEach((item) => {
+        const title = item.querySelector('.card-title');
+        if (!searchText.test(title.textContent.trim())) {
+          item.parentNode.style.display = 'none';
+        } else {
+          item.parentNode.style.display = '';
+        }
+      });
+    });
+    // end search
 
   }
   // end filter sales
