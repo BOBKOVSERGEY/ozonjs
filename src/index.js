@@ -2,7 +2,7 @@
 'use strict';
 document.addEventListener('DOMContentLoaded', () => {
   // checkbox
-  {
+  const checkbox = () => {
     const checkboxes  = document.querySelectorAll('.filter-check_checkbox');
     checkboxes.forEach((elem) => {
       elem.addEventListener('change', () => {
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // end checkbox
 
   // cart
-  {
+  const cart = () => {
     const btnCart = document.getElementById('cart');
     const modalCart = document.querySelector('.cart');
     const closeBtnModal = document.querySelector('.cart-close');
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // end cart
 
   // filter sales
-  {
+  const sortFilter = () => {
     const cards = document.querySelectorAll('.goods .card'),
           discountCheckbox = document.getElementById('discount-checkbox');
 
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const getData = () => {
     const goodsWrapper = document.querySelector('.goods');
 
-    fetch('../db/db.json')
+    return fetch('../db/db.json')
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       })
       .then((data) => {
-        renderCards(data);
+        return data;
       })
       .catch((err) => {
         //console.log(err);
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
     //console.log(fetch('../db/db.json'));
   };
 
-  getData();
+
   // end get data
 
   // render products
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('div');
       card.className = 'col-12 col-md-6 col-lg-4 col-xl-3';
       card.innerHTML = `
-          <div class="card">
+          <div class="card" data-category="${item.category}">
           ${item.sale = item.sale ? '<div class="card-sale">🔥Hot Sale🔥</div>' : ''}
             <div class="card-img-wrapper">
               <span class="card-img-top"
@@ -235,6 +235,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
     })
   };
+
+
   // end render products
+
+  const renderCatalog = () => {
+    const cards = document.querySelectorAll('.goods .card');
+
+    // создаем коолекцию
+    const categories = new Set();
+
+    const catalogList = document.querySelector('.catalog-list');
+    const catalogWrapper = document.querySelector('.catalog');
+
+    const catalogBtn = document.querySelector('.catalog-button');
+    catalogBtn.addEventListener('click', (event) => {
+      console.log(event);
+      if (catalogWrapper.style.display) {
+        catalogWrapper.style.display = '';
+      } else {
+        catalogWrapper.style.display = 'block';
+      }
+
+      if (event.target.tagName === 'LI') {
+        cards.forEach((item) => {
+          if (item.dataset.category === event.target.textContent) {
+            item.parentNode.style.display = ''
+          } else {
+            item.parentNode.style.display = 'none'
+          }
+        });
+      }
+
+    });
+
+    cards.forEach((item) => {
+      categories.add(item.dataset.category);
+    });
+
+   categories.forEach((item)  => {
+     catalogList.insertAdjacentHTML('beforeend', `<li>${item}</li>`)
+    })
+  };
+
+  getData().then( (data) => {
+    renderCards(data);
+    sortFilter();
+    checkbox();
+    cart();
+    renderCatalog();
+  });
 
 });
