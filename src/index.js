@@ -108,45 +108,51 @@ document.addEventListener('DOMContentLoaded', () => {
     const cards = document.querySelectorAll('.goods .card'),
           discountCheckbox = document.getElementById('discount-checkbox');
 
-    discountCheckbox.addEventListener('change', () => {
-      cards.forEach((item) => {
-        if (discountCheckbox.checked) {
 
-          console.log(new Boolean(item.querySelector('.card-sale')));
-
-          if (!item.querySelector('.card-sale')) {
-            //item.parentNode.remove();
-            // обращаемся к родителя parentNode
-            item.parentNode.style.display = 'none';
-          }
-        } else {
-          //document.querySelector('.goods').appendChild(item.parentNode);
-          item.parentNode.style.display = '';
-        }
-      })
-    });
 
     // filter price
     const min = document.getElementById('min');
     const max = document.getElementById('max');
-1
-    const filterPrice = () => {
+
+    /*const filterPrice = () => {
       cards.forEach((elem) => {
         const elemPrice = elem.querySelector('.card-price');
         const price = parseFloat(elemPrice.textContent);
         console.log(price);
 
         if ((min.value && price < min.value) || (max.value && price > max.value)) {
-          elem.parentNode.remove();
+          elem.parentNode.style.display = 'none';
         } else {
+          elem.parentNode.style.display = '';
+        }
 
+      });
+
+    };*/
+
+    const filter = () => {
+      cards.forEach((item) => {
+        const elemPrice = item.querySelector('.card-price');
+        const price = parseFloat(elemPrice.textContent);
+        const discount = item.querySelector('.card-sale');
+
+        if ((min.value && price < min.value) || (max.value && price > max.value)) {
+          item.parentNode.style.display = 'none';
+        } else if (discountCheckbox.checked && !discount) {
+          item.parentNode.style.display = 'none';
+        } else {
+          item.parentNode.style.display = '';
         }
 
       });
     };
 
-    min.addEventListener('change', filterPrice);
-    max.addEventListener('change', filterPrice);
+    discountCheckbox.addEventListener('change', filter);
+
+    min.addEventListener('change', filter);
+    max.addEventListener('change', filter);
+
+
     // end filter price
 
 
@@ -171,5 +177,64 @@ document.addEventListener('DOMContentLoaded', () => {
 
   }
   // end filter sales
+
+
+  // get data
+  const getData = () => {
+    const goodsWrapper = document.querySelector('.goods');
+
+    fetch('../db/db.json')
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Данные не получены ошибка: ' + response.status);
+        }
+      })
+      .then((data) => {
+        renderCards(data);
+      })
+      .catch((err) => {
+        //console.log(err);
+        console.warn(err);
+        goodsWrapper.innerHTML = '<h1>Что то пошло не так!</h1>';
+      });
+    // pending - ожидание
+    // resolved - решено
+    // rejected - отвергнуто
+
+    //console.log(fetch('../db/db.json'));
+  };
+
+  getData();
+  // end get data
+
+  // render products
+  // выводим карточки товара
+  const renderCards = (data) => {
+    const goodsWrapper = document.querySelector('.goods');
+    data.goods.forEach( item => {
+      console.log(item);
+      const card = document.createElement('div');
+      card.className = 'col-12 col-md-6 col-lg-4 col-xl-3';
+      card.innerHTML = `
+          <div class="card">
+          ${item.sale = item.sale ? '<div class="card-sale">🔥Hot Sale🔥</div>' : ''}
+            <div class="card-img-wrapper">
+              <span class="card-img-top"
+                style="background-image: url('${item.img}')"></span>
+            </div>
+            <div class="card-body justify-content-between">
+              <div class="card-price" style="${item.sale ? 'color:red' : ''}">${item.price} ₽</div>
+              <h5 class="card-title">${item.title}</h5>
+              <button class="btn btn-primary">В корзину</button>
+            </div>
+          </div>
+      `;
+      goodsWrapper.appendChild(card);
+
+    })
+  };
+  // end render products
 
 });
