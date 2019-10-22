@@ -130,22 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     };*/
 
-    const filter = () => {
-      cards.forEach((item) => {
-        const elemPrice = item.querySelector('.card-price');
-        const price = parseFloat(elemPrice.textContent);
-        const discount = item.querySelector('.card-sale');
 
-        if ((min.value && price < min.value) || (max.value && price > max.value)) {
-          item.parentNode.style.display = 'none';
-        } else if (discountCheckbox.checked && !discount) {
-          item.parentNode.style.display = 'none';
-        } else {
-          item.parentNode.style.display = '';
-        }
-
-      });
-    };
 
     discountCheckbox.addEventListener('change', filter);
 
@@ -175,7 +160,38 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     // end search
 
-  }
+  };
+
+  const filter = () => {
+    const cards = document.querySelectorAll('.goods .card'),
+      discountCheckbox = document.getElementById('discount-checkbox');
+    // filter price
+    const min = document.getElementById('min');
+    const max = document.getElementById('max');
+
+    const activeLi = document.querySelector('.catalog-list li.active');
+
+    cards.forEach((item) => {
+      const elemPrice = item.querySelector('.card-price');
+      const price = parseFloat(elemPrice.textContent);
+      const discount = item.querySelector('.card-sale');
+
+      if ((min.value && price < min.value) || (max.value && price > max.value)) {
+        item.parentNode.style.display = 'none';
+      } else if (discountCheckbox.checked && !discount) {
+        item.parentNode.style.display = 'none';
+      } else if (activeLi) {
+        if (item.dataset.category !== activeLi.textContent) {
+          item.parentNode.style.display = 'none';
+        } else {
+          item.parentNode.style.display = '';
+        }
+      } else {
+        item.parentNode.style.display = '';
+      }
+
+    });
+  };
   // end filter sales
 
 
@@ -265,6 +281,14 @@ document.addEventListener('DOMContentLoaded', () => {
             item.parentNode.style.display = 'none'
           }
         });
+        allLi.forEach(item => {
+          if (item === event.target) {
+            item.classList.add('active');
+          } else {
+            item.classList.remove('active');
+          }
+        });
+        filter();
       }
 
     });
@@ -275,15 +299,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
    categories.forEach((item)  => {
      catalogList.insertAdjacentHTML('beforeend', `<li>${item}</li>`)
-    })
+    });
+
+   const allLi = catalogList.querySelectorAll('li');
+
   };
 
   getData().then( (data) => {
     renderCards(data);
+    renderCatalog();
     sortFilter();
     checkbox();
     cart();
-    renderCatalog();
+
   });
 
 });

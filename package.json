@@ -1,13 +1,15 @@
 {
   "name": "ozonjs",
   "version": "1.0.0",
-  "description": "",
   "main": "app.js",
   "dependencies": {
     "browser-sync": "^2.26.7",
     "node-sass": "^4.12.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9"
+  },
   "scripts": {
     "compile:sass": "node-sass scss/style.scss style/style.css -w"
   },
@@ -20,5 +22,6 @@
   "bugs": {
     "url": "https://github.com/BOBKOVSERGEY/ozonjs/issues"
   },
-  "homepage": "https://github.com/BOBKOVSERGEY/ozonjs#readme"
+  "homepage": "https://github.com/BOBKOVSERGEY/ozonjs#readme",
+  "description": ""
 }
